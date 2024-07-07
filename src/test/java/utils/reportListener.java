@@ -54,6 +54,11 @@ public class reportListener extends ReportManager implements ITestListener {
             logger.log(Status.FAIL,
                     MarkupHelper.createLabel(result.getThrowable() + " - Test Case Failed", ExtentColor.RED));
         }
+        try {
+            logger.addScreenCaptureFromBase64String(captureScreen(result.getName()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void onTestSkipped(ITestResult result) {
@@ -80,7 +85,7 @@ public class reportListener extends ReportManager implements ITestListener {
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            String filePath = "test-output/ExtentReport/TestExecutionReport.json";
+            String filePath =  System.getProperty("user.dir") + "/test-output/reports/TestExecutionReport.json";
             mapper.writeValue(new File(filePath), testResult);
         } catch (IOException e) {
             throw new RuntimeException("Error occurred while writing to TestExecutionReport.json file: ",
